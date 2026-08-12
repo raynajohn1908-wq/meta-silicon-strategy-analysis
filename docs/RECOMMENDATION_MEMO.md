@@ -30,8 +30,8 @@ Meta reported Q2 2026 results on **July 29, 2026**. The quarter shows why infras
 - Net income was **$15.848B**, down 14% YoY.
 - Free cash flow was **$784M**, versus **$8.505B** in Q2 2025, a decline of roughly 91%.
 - Q2 capital expenditures were **$31.08B**.
-- Full-year 2026 capex guidance was narrowed to **$130B–$145B** from $125B–$145B.
-- Full-year 2026 total-expense guidance was raised at the low end to **$165B–$169B**.
+- Full-year 2026 capex guidance was narrowed to **$130B-$145B** from $125B-$145B.
+- Full-year 2026 total-expense guidance was raised at the low end to **$165B-$169B**.
 
 Meta also said Q2 expenses included **$1.18B of severance costs tied to the May 2026 headcount reduction** and reported that approximately **8,000 employees** were impacted by that reduction.
 
@@ -60,11 +60,11 @@ That makes the software abstraction layer strategically important. In a portfoli
 
 From a product perspective, software portability matters because it affects:
 
-- **developer velocity** — how quickly model teams can adopt or switch hardware paths;
-- **migration cost** — how much engineering effort is required to move a workload;
-- **reliability** — whether the full software/hardware path is production-ready;
-- **optionality** — whether Meta can shift workloads when supply, cost, or capacity changes;
-- **time to value** — whether new accelerator capacity can be productively used quickly.
+- **developer velocity**: how quickly model teams can adopt or switch hardware paths;
+- **migration cost**: how much engineering effort is required to move a workload;
+- **reliability**: whether the full software/hardware path is production-ready;
+- **optionality**: whether Meta can shift workloads when supply, cost, or capacity changes;
+- **time to value**: whether new accelerator capacity can be productively used quickly.
 
 The relevant question is therefore not just **“Is MTIA cheaper?”** It is **“Can Meta use the best accelerator for each workload without creating unacceptable software friction?”**
 

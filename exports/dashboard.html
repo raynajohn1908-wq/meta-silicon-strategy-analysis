@@ -3,503 +3,83 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Meta Silicon Strategy Dashboard</title>
+<title>Meta Custom Silicon Strategy Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 <style>
-  :root {
-    color-scheme: light;
-    --surface-1:      #fcfcfb;
-    --page-plane:      #f9f9f7;
-    --text-primary:   #0b0b0b;
-    --text-secondary: #52514e;
-    --text-muted:     #898781;
-    --gridline:       #e1e0d9;
-    --baseline:       #c3c2b7;
-    --border:         rgba(11,11,11,0.10);
-    --series-1:       #2a78d6; /* blue - silicon strategy / revenue */
-    --series-2:       #eb6834; /* orange - capex pressure / net income */
-    --series-3:       #1baf7a; /* aqua - free cash flow (slots 1/2/3 validated all-pairs together) */
-    --status-good:    #0ca30c;
-    --status-muted:   #898781;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:where(:not([data-theme="light"])) {
-      color-scheme: dark;
-      --surface-1:      #1a1a19;
-      --page-plane:      #0d0d0d;
-      --text-primary:   #ffffff;
-      --text-secondary: #c3c2b7;
-      --text-muted:     #898781;
-      --gridline:       #2c2c2a;
-      --baseline:       #383835;
-      --border:         rgba(255,255,255,0.10);
-      --series-1:       #3987e5;
-      --series-2:       #d95926;
-      --series-3:       #199e70;
-      --status-good:    #0ca30c;
-    }
-  }
-  :root[data-theme="dark"] {
-    color-scheme: dark;
-    --surface-1:      #1a1a19;
-    --page-plane:      #0d0d0d;
-    --text-primary:   #ffffff;
-    --text-secondary: #c3c2b7;
-    --text-muted:     #898781;
-    --gridline:       #2c2c2a;
-    --baseline:       #383835;
-    --border:         rgba(255,255,255,0.10);
-    --series-1:       #3987e5;
-    --series-2:       #d95926;
-    --series-3:       #199e70;
-    --status-good:    #0ca30c;
-  }
-
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    background: var(--page-plane);
-    color: var(--text-primary);
-    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-    line-height: 1.45;
-  }
-  .wrap { max-width: 1100px; margin: 0 auto; padding: 32px 20px 64px; }
-
-  header.page-header { margin-bottom: 28px; }
-  header.page-header h1 { font-size: 1.6rem; margin: 0 0 8px; }
-  header.page-header p.subhead { color: var(--text-secondary); margin: 0; max-width: 72ch; font-size: 0.98rem; }
-  header.page-header p.asof { color: var(--text-muted); font-size: 0.82rem; margin-top: 10px; }
-
-  .kpi-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 12px;
-    margin-bottom: 28px;
-  }
-  .stat-tile {
-    background: var(--surface-1);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 16px 18px;
-  }
-  .stat-tile .label { font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 6px; }
-  .stat-tile .value { font-size: 1.5rem; font-weight: 600; }
-  .stat-tile .delta { font-size: 0.82rem; margin-top: 4px; }
-  .stat-tile .delta.down { color: var(--series-3); }
-  .stat-tile .delta.up { color: var(--text-secondary); }
-  .stat-tile .src { font-size: 0.72rem; color: var(--text-muted); margin-top: 8px; }
-
-  section.card {
-    background: var(--surface-1);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 22px 22px 18px;
-    margin-bottom: 24px;
-  }
-  section.card h2 { font-size: 1.15rem; margin: 0 0 4px; }
-  section.card p.desc { color: var(--text-secondary); font-size: 0.9rem; margin: 0 0 18px; max-width: 78ch; }
-  .chart-canvas-wrap { position: relative; height: 340px; }
-
-  .note-row {
-    display: flex; flex-wrap: wrap; gap: 10px 24px;
-    margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--gridline);
-    font-size: 0.82rem; color: var(--text-secondary);
-  }
-  .note-row .item { display: flex; align-items: center; gap: 6px; }
-  .note-row .key { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
-
-  .source-line { font-size: 0.76rem; color: var(--text-muted); margin-top: 14px; }
-  .caveat-box {
-    margin-top: 14px; padding: 10px 14px; border-radius: 8px;
-    background: color-mix(in srgb, var(--text-muted) 10%, transparent);
-    border: 1px solid var(--border);
-    font-size: 0.82rem; color: var(--text-primary);
-  }
-
-  /* --- Timeline --- */
-  .timeline {
-    display: flex;
-    overflow-x: auto;
-    padding: 10px 4px 4px;
-    gap: 0;
-  }
-  .timeline::before { content: none; }
-  .tl-node {
-    flex: 0 0 220px;
-    position: relative;
-    padding: 28px 14px 4px 14px;
-    border-top: 3px solid var(--gridline);
-  }
-  .tl-node .dot {
-    position: absolute;
-    top: -9px; left: 14px;
-    width: 14px; height: 14px;
-    border-radius: 50%;
-    border: 3px solid var(--surface-1);
-  }
-  .tl-node.silicon .dot { background: var(--series-1); }
-  .tl-node.capex .dot { background: var(--series-2); }
-  .tl-node .date { font-size: 0.76rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; }
-  .tl-node .tag { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px; display: inline-block; padding: 2px 6px; border-radius: 4px; }
-  .tl-node.silicon .tag { color: var(--series-1); background: color-mix(in srgb, var(--series-1) 14%, transparent); }
-  .tl-node.capex .tag { color: var(--series-2); background: color-mix(in srgb, var(--series-2) 16%, transparent); }
-  .tl-node .event { font-size: 0.86rem; font-weight: 600; margin-bottom: 6px; }
-  .tl-node .meaning { font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 8px; }
-  .tl-node .src { font-size: 0.68rem; color: var(--text-muted); }
-
-  /* --- MTIA roadmap --- */
-  .roadmap { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
-  .chip-card { border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
-  .chip-card h3 { margin: 0 0 8px; font-size: 1.05rem; }
-  .badge { display: inline-flex; align-items: center; gap: 5px; font-size: 0.74rem; padding: 3px 8px; border-radius: 999px; margin-right: 6px; margin-bottom: 8px; }
-  .badge.workload-training { background: color-mix(in srgb, var(--series-2) 16%, transparent); color: var(--series-2); }
-  .badge.workload-inference { background: color-mix(in srgb, var(--series-1) 14%, transparent); color: var(--series-1); }
-  .badge.status-production { background: color-mix(in srgb, var(--status-good) 16%, transparent); color: var(--status-good); }
-  .badge.status-announced { background: color-mix(in srgb, var(--status-muted) 18%, transparent); color: var(--text-secondary); }
-  .badge .dot-sm { width: 6px; height: 6px; border-radius: 50%; background: currentColor; display: inline-block; }
-  .chip-card p.notes { font-size: 0.82rem; color: var(--text-secondary); margin: 8px 0 6px; }
-  .chip-card .src { font-size: 0.7rem; color: var(--text-muted); }
-
-  details.table-toggle { margin-top: 14px; }
-  details.table-toggle summary { cursor: pointer; font-size: 0.85rem; color: var(--text-secondary); }
-  table.data-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.82rem; }
-  table.data-table th, table.data-table td { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--gridline); font-variant-numeric: tabular-nums; }
-  table.data-table th { color: var(--text-secondary); font-weight: 600; }
-
-  .gap-list { list-style: none; padding: 0; margin: 0; }
-  .gap-list li { padding: 8px 0; border-bottom: 1px solid var(--gridline); font-size: 0.88rem; color: var(--text-secondary); }
-  .gap-list li:last-child { border-bottom: none; }
-  .gap-list strong { color: var(--text-primary); }
-
-  footer.page-footer { margin-top: 32px; font-size: 0.78rem; color: var(--text-muted); }
+:root{--bg:#f7f7f5;--card:#fff;--text:#111;--muted:#666;--line:#e4e4df;--blue:#2b6fd3;--orange:#df6b35;--green:#1b9b6b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5}.wrap{max-width:1100px;margin:auto;padding:36px 20px 64px}h1{font-size:2rem;line-height:1.15;margin:0 0 10px}.sub{max-width:820px;color:var(--muted);margin:0 0 8px}.asof{font-size:.82rem;color:var(--muted);margin-bottom:28px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-bottom:24px}.kpi,.card{background:var(--card);border:1px solid var(--line);border-radius:12px}.kpi{padding:16px}.kpi .label{font-size:.78rem;color:var(--muted)}.kpi .value{font-size:1.55rem;font-weight:700;margin:4px 0}.kpi .note{font-size:.78rem;color:var(--muted)}.card{padding:22px;margin-bottom:20px}.card h2{margin:0 0 6px;font-size:1.15rem}.desc{color:var(--muted);font-size:.9rem;margin:0 0 18px}.chart{height:330px}.roadmap{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}.chip{border:1px solid var(--line);border-radius:10px;padding:14px}.chip h3{margin:0 0 6px}.pill{display:inline-block;border-radius:999px;padding:3px 8px;background:#eef3fb;color:#245ea9;font-size:.72rem;margin:0 4px 6px 0}.chip p{font-size:.82rem;color:var(--muted);margin:6px 0}.timeline{display:grid;gap:10px}.event{border-left:3px solid var(--blue);padding:4px 0 4px 12px}.event.fin{border-left-color:var(--orange)}.event .date{font-size:.76rem;color:var(--muted)}.event strong{display:block;font-size:.92rem}.event span{display:block;color:var(--muted);font-size:.82rem}.finding{border-left:4px solid var(--green);padding:12px 14px;background:#f1faf6;border-radius:8px}.source{font-size:.76rem;color:var(--muted);margin-top:14px}a{color:var(--blue)}footer{font-size:.78rem;color:var(--muted);margin-top:28px}
 </style>
 </head>
 <body>
 <div class="wrap">
+  <h1>Meta Custom Silicon Strategy Analysis</h1>
+  <p class="sub">Does MTIA materially improve Meta's AI infrastructure economics, or mainly improve workload efficiency and supplier diversification while total infrastructure spending continues to rise?</p>
+  <p class="asof">Public-data snapshot through Meta's Q2 2026 results released July 29, 2026.</p>
 
-  <header class="page-header">
-    <h1>Is custom silicon actually solving Meta's AI infrastructure cost problem?</h1>
-    <p class="subhead">Meta raised 2026 capex guidance to $125B&ndash;$145B while free cash flow fell ~91% YoY in Q2 2026 &mdash; and in the same window, accelerated its custom-silicon program (MTIA) <em>and</em> signed a new long-term GPU deal with AMD. This dashboard visualizes that sequence using only Meta's own disclosed figures.</p>
-    <p class="asof">Data as of Aug 3, 2026 (Meta Q2 2026 earnings report). All figures cited under each chart.</p>
-  </header>
-
-  <div class="kpi-row">
-    <div class="stat-tile">
-      <div class="label">FY2026 capex guidance</div>
-      <div class="value">$125B&ndash;$145B</div>
-      <div class="delta up">Ceiling confirmed Aug 3, 2026</div>
-      <div class="src">Meta Q1/Q2 2026 earnings calls</div>
-    </div>
-    <div class="stat-tile">
-      <div class="label">Q2 2026 revenue</div>
-      <div class="value">$60.8B</div>
-      <div class="delta up">+28% YoY</div>
-      <div class="src">Meta Q2 2026 earnings report</div>
-    </div>
-    <div class="stat-tile">
-      <div class="label">Q2 2026 free cash flow</div>
-      <div class="value">&darr;91% YoY</div>
-      <div class="delta down">from $8.5B (Q2 2025); absolute Q2 2026 figure not disclosed</div>
-      <div class="src">Meta Q2 2026 earnings report</div>
-    </div>
-    <div class="stat-tile">
-      <div class="label">April 2026 workforce cut</div>
-      <div class="value">8,000 jobs</div>
-      <div class="delta down">~10% of workforce, stated to offset AI capex</div>
-      <div class="src">CNBC, Apr 2026</div>
-    </div>
+  <div class="grid">
+    <div class="kpi"><div class="label">FY2026 capex guidance</div><div class="value">$130B–$145B</div><div class="note">Narrowed from $125B–$145B</div></div>
+    <div class="kpi"><div class="label">Q2 2026 revenue</div><div class="value">$60.801B</div><div class="note">+28% YoY</div></div>
+    <div class="kpi"><div class="label">Q2 2026 free cash flow</div><div class="value">$0.784B</div><div class="note">vs. $8.505B in Q2 2025</div></div>
+    <div class="kpi"><div class="label">Q2 2026 capex</div><div class="value">$31.08B</div><div class="note">~51% of quarterly revenue</div></div>
   </div>
 
   <section class="card">
-    <h2>The capex-vs-cash-flow tension</h2>
-    <p class="desc">Revenue and net income, Q2 2025 vs. Q2 2026 (bars, $ billions) against free cash flow (line). Meta disclosed FCF only as a percentage change, not an absolute Q2 2026 dollar figure &mdash; that point is left open on the chart rather than estimated.</p>
-    <div class="chart-canvas-wrap">
-      <canvas id="capexFcfChart" role="img" aria-label="Bar and line combo chart comparing Q2 2025 and Q2 2026 revenue, net income, and free cash flow"></canvas>
-    </div>
-    <div class="note-row">
-      <div class="item"><span class="key" style="background:var(--series-1)"></span>Revenue: +28% YoY</div>
-      <div class="item"><span class="key" style="background:var(--series-2)"></span>Net income: &minus;14% YoY</div>
-      <div class="item"><span class="key" style="background:var(--series-3)"></span>Free cash flow: &minus;91% YoY (Q2 2026 absolute not disclosed)</div>
-      <div class="item">Total costs: +55% YoY &nbsp;&middot;&nbsp; R&amp;D expenses: +68% YoY &nbsp;&middot;&nbsp; Operating profit: $18.8B, &minus;8% YoY</div>
-    </div>
-    <div class="caveat-box">
-      <strong>Named data gap:</strong> Meta has not disclosed an absolute Q2 2026 free-cash-flow dollar figure, only the &minus;91% YoY change from $8.5B. That point is intentionally left blank on the chart rather than back-calculated.
-    </div>
-    <details class="table-toggle">
-      <summary>View underlying data as a table</summary>
-      <table class="data-table">
-        <thead><tr><th>Metric</th><th>Q2 2025</th><th>Q2 2026</th><th>YoY change</th></tr></thead>
-        <tbody>
-          <tr><td>Revenue</td><td>$47.52B</td><td>$60.8B</td><td>+28%</td></tr>
-          <tr><td>Net income</td><td>$18.34B</td><td>$15.85B</td><td>&minus;14%</td></tr>
-          <tr><td>Operating profit</td><td>&mdash; (not disclosed)</td><td>$18.8B</td><td>&minus;8%</td></tr>
-          <tr><td>Free cash flow</td><td>$8.5B</td><td>&mdash; (not disclosed)</td><td>&minus;91%</td></tr>
-          <tr><td>Total costs</td><td>&mdash;</td><td>&mdash;</td><td>+55%</td></tr>
-          <tr><td>R&amp;D expenses</td><td>&mdash;</td><td>&mdash;</td><td>+68%</td></tr>
-        </tbody>
-      </table>
-    </details>
-    <p class="source-line">Source: Meta Q2 2026 earnings call / report, Aug 3 2026 (via CNBC, GuruFocus coverage).</p>
+    <h2>Financial context</h2>
+    <p class="desc">Meta's revenue remained strong while operating income, net income, and free cash flow declined year over year during a quarter with very high infrastructure investment.</p>
+    <div class="chart"><canvas id="financialChart"></canvas></div>
+    <div class="source">Source: Meta Platforms Q2 2026 Results, July 29, 2026.</div>
   </section>
 
   <section class="card">
-    <h2>Silicon strategy timeline</h2>
-    <p class="desc">Capex-pressure events and silicon-strategy events, interleaved chronologically &mdash; the sequence that makes Meta's "portfolio approach" visible: expanding GPU supply and accelerating custom silicon within the same few months as the capex guidance raise and the layoffs.</p>
-    <div class="timeline" id="strategyTimeline"></div>
-    <div class="note-row">
-      <div class="item"><span class="key" style="background:var(--series-1)"></span>Silicon strategy</div>
-      <div class="item"><span class="key" style="background:var(--series-2)"></span>Capex pressure</div>
+    <h2>What the public data actually supports</h2>
+    <div class="finding"><strong>MTIA can improve workload-level economics without reducing total company capex.</strong> Meta says its custom full-stack approach is more compute- and cost-efficient for intended workloads, but total spending can still rise as AI demand, model complexity, and data-center capacity grow.</div>
+    <p class="desc" style="margin-top:14px">The missing evidence is a comparable MTIA-vs-external-accelerator cost-per-query/TCO series and a spending split by silicon type. Without those, a precise MTIA ROI estimate would be false precision.</p>
+  </section>
+
+  <section class="card">
+    <h2>MTIA roadmap</h2>
+    <p class="desc">Meta describes the newer roadmap as inference-first in near-term deployment—not permanently inference-only.</p>
+    <div class="roadmap">
+      <div class="chip"><h3>MTIA 300</h3><span class="pill">In production</span><span class="pill">Training</span><p>Used for ranking and recommendation training.</p></div>
+      <div class="chip"><h3>MTIA 400</h3><span class="pill">Developing / deploying</span><span class="pill">GenAI inference first</span><p>Meta says it is capable of handling all workloads, with near-term use focused primarily on GenAI inference.</p></div>
+      <div class="chip"><h3>MTIA 450</h3><span class="pill">Developing / deploying</span><span class="pill">GenAI inference first</span><p>Broader workload capability; near-term deployment remains inference-first.</p></div>
+      <div class="chip"><h3>MTIA 500</h3><span class="pill">Developing / deploying</span><span class="pill">GenAI inference first</span><p>Part of the four-generation, two-year roadmap extending into 2027.</p></div>
     </div>
-    <p class="source-line">Sources: Meta Engineering blog (about.fb.com), Mar 11 &amp; Apr 14 2026; CNBC, Mar &amp; Apr 2026; Meta Q1/Q2 2026 earnings calls. Exact dates not disclosed by Meta are labeled as such.</p>
+    <div class="source">Source: Meta, “Expanding Meta's Custom Silicon to Power Our AI Workloads,” March 11, 2026.</div>
   </section>
 
   <section class="card">
-    <h2>MTIA chip generation roadmap</h2>
-    <p class="desc">Four chip generations announced in two years &mdash; a fast cadence for the industry. Only MTIA 300 is in production; it trains ranking/recommendation models, not frontier LLMs. MTIA 400/450/500 are inference-only, primarily for GenAI workloads.</p>
-    <div class="roadmap" id="mtiaRoadmap"></div>
-    <p class="source-line">Source: Meta Engineering blog (about.fb.com), Mar 11 2026.</p>
+    <h2>Strategy timeline</h2>
+    <div class="timeline">
+      <div class="event"><div class="date">2023</div><strong>MTIA custom-silicon family emerges</strong><span>Meta begins building workload-specific accelerators inside its own infrastructure stack.</span></div>
+      <div class="event"><div class="date">February 24, 2026</div><strong>Meta announces long-term AMD infrastructure agreement</strong><span>External accelerators remain part of the scaling plan.</span></div>
+      <div class="event"><div class="date">March 11, 2026</div><strong>Four new MTIA generations announced within two years</strong><span>Rapid iteration, inference-first deployment, broader workload capability.</span></div>
+      <div class="event"><div class="date">April 14, 2026</div><strong>Broadcom multi-generation partnership expands</strong><span>Custom silicon becomes a durable, multi-generation infrastructure program.</span></div>
+      <div class="event fin"><div class="date">May 2026</div><strong>Approximately 8,000 employees impacted by headcount reduction</strong><span>Q2 later included $1.18B of related severance expense. This is financial context, not evidence that MTIA caused the reduction.</span></div>
+      <div class="event fin"><div class="date">July 29, 2026</div><strong>Q2 results show $31.08B quarterly capex and $784M free cash flow</strong><span>The infrastructure build remains economically significant even as revenue grows 28% YoY.</span></div>
+    </div>
   </section>
 
   <section class="card">
-    <h2>What Meta has not disclosed</h2>
-    <p class="desc">Named explicitly rather than estimated &mdash; these are the specific gaps that keep this analysis from reaching a firm conclusion.</p>
-    <ul class="gap-list">
-      <li><strong>No cost-per-query or TCO figure</strong> comparing MTIA inference to GPU-based inference.</li>
-      <li><strong>No capex breakdown</strong> by GPU spend vs. MTIA/custom-silicon spend within the $125B&ndash;$145B FY2026 guidance.</li>
-      <li><strong>No disclosed timeline</strong> for whether custom-silicon investment is expected to reduce total infrastructure capex, versus simply changing its composition.</li>
-    </ul>
+    <h2>Bottom line</h2>
+    <p class="desc">The most defensible conclusion is not “MTIA is cutting Meta's total capex.” It is: <strong>MTIA appears strategically useful for workload efficiency and silicon diversification, but the public data is not sufficient to quantify total savings.</strong></p>
+    <p><a href="../docs/RECOMMENDATION_MEMO.md">Read the full strategy memo →</a></p>
   </section>
 
-  <footer class="page-footer">
-    Analysis built entirely from publicly disclosed Meta figures and reporting (Meta earnings calls, about.fb.com engineering blog, CNBC, GuruFocus, Tom's Hardware, TechBrew/Deloitte). See README.md and docs/RECOMMENDATION_MEMO.md for the full source table and narrative analysis.
-  </footer>
-
+  <footer>Primary sources: Meta Platforms Q2 2026 Results (July 29, 2026); Meta Newsroom MTIA roadmap (March 11, 2026); AMD infrastructure agreement (February 24, 2026); Broadcom custom-silicon partnership (April 14, 2026).</footer>
 </div>
-
 <script>
-(function () {
-  const rootStyles = getComputedStyle(document.documentElement);
-  const cssVar = (name) => rootStyles.getPropertyValue(name).trim();
-
-  function paletteColors() {
-    return {
-      series1: cssVar('--series-1'),
-      series2: cssVar('--series-2'),
-      series3: cssVar('--series-3'),
-      textSecondary: cssVar('--text-secondary'),
-      textMuted: cssVar('--text-muted'),
-      gridline: cssVar('--gridline'),
-      surface: cssVar('--surface-1'),
-    };
-  }
-
-  // ---- Chart 1: Revenue / Net income (bars) + Free cash flow (line) -------
-  const c = paletteColors();
-  const ctx = document.getElementById('capexFcfChart').getContext('2d');
-  new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: ['Q2 2025', 'Q2 2026'],
-      datasets: [
-        {
-          type: 'bar',
-          label: 'Revenue ($B)',
-          data: [47.52, 60.8],
-          backgroundColor: c.series1,
-          borderRadius: 4,
-          maxBarThickness: 24,
-          order: 2,
-        },
-        {
-          type: 'bar',
-          label: 'Net income ($B)',
-          data: [18.34, 15.85],
-          backgroundColor: c.series2,
-          borderRadius: 4,
-          maxBarThickness: 24,
-          order: 2,
-        },
-        {
-          type: 'line',
-          label: 'Free cash flow ($B)',
-          data: [8.5, null],
-          borderColor: c.series3,
-          backgroundColor: c.series3,
-          pointBackgroundColor: c.series3,
-          pointBorderColor: c.surface,
-          pointBorderWidth: 2,
-          pointRadius: 6,
-          borderWidth: 2,
-          spanGaps: false,
-          order: 1,
-        },
-      ],
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      interaction: { mode: 'index', intersect: false },
-      scales: {
-        x: { grid: { display: false }, ticks: { color: c.textSecondary } },
-        y: {
-          title: { display: true, text: 'USD, billions', color: c.textMuted, font: { size: 11 } },
-          grid: { color: c.gridline, drawTicks: false },
-          ticks: { color: c.textMuted },
-          beginAtZero: true,
-        },
-      },
-      plugins: {
-        legend: {
-          position: 'top',
-          align: 'start',
-          labels: { color: c.textSecondary, usePointStyle: true, boxWidth: 8, boxHeight: 8 },
-        },
-        tooltip: {
-          callbacks: {
-            label: function (item) {
-              if (item.raw === null) {
-                return item.dataset.label + ': not disclosed (−91% YoY stated)';
-              }
-              return item.dataset.label + ': $' + item.raw + 'B';
-            },
-          },
-        },
-      },
-    },
-  });
-
-  // ---- Timeline -------------------------------------------------------------
-  const timelineEvents = [
-    {
-      date: '2023 (exact date not disclosed)',
-      category: 'silicon',
-      event: 'MTIA first introduced as Meta’s homegrown AI chip family',
-      meaning: 'Meta begins building an alternative to buying 100% of its AI compute from Nvidia/AMD.',
-      source: 'Meta Engineering blog, Mar 11 2026',
-    },
-    {
-      date: '~2 weeks before Mar 11, 2026',
-      category: 'silicon',
-      event: 'Long-term AI infrastructure agreement signed with AMD for additional GPU capacity',
-      meaning: 'Shortly before announcing custom-silicon acceleration, Meta locks in more third-party GPU supply — evidence of an additive "portfolio approach," not a pivot away from GPUs.',
-      source: 'Reported ahead of Mar 11 2026 MTIA announcement; exact date not disclosed',
-    },
-    {
-      date: 'March 11, 2026',
-      category: 'silicon',
-      event: 'Meta announces acceleration to 4 MTIA chip generations (300/400/450/500) in 2 years',
-      meaning: 'A much faster public cadence than typical multi-year chip cycles. Stated rationale: supply diversity and price insulation vs. Nvidia/AMD, optimized for inference TCO.',
-      source: 'Meta Engineering blog; CNBC, Mar 11 2026',
-    },
-    {
-      date: 'April 2026',
-      category: 'capex',
-      event: '2026 capex guidance raised to $125B–$145B; 8,000 jobs cut (~10% of workforce)',
-      meaning: 'Meta increases AI infrastructure spend and cuts headcount elsewhere, explicitly "to offset the other investments we’re making."',
-      source: 'Meta Q1 2026 earnings call; CNBC, Apr 2026',
-    },
-    {
-      date: 'April 14, 2026',
-      category: 'silicon',
-      event: 'Silicon partnership with Broadcom expanded to co-develop future MTIA generations',
-      meaning: 'A multi-generation agreement, signaling a durable multi-year program rather than a one-off chip project.',
-      source: 'Meta Engineering blog, Apr 14 2026',
-    },
-    {
-      date: 'August 3, 2026',
-      category: 'capex',
-      event: 'Q2 2026 results: revenue +28% YoY, but FCF down ~91% YoY; $145B capex ceiling confirmed',
-      meaning: 'The capex-vs-cash-flow tension has not eased by the next quarter’s report — still visible in the same period MTIA is scaling up.',
-      source: 'Meta Q2 2026 earnings call, Aug 3 2026',
-    },
-  ];
-
-  const tlRoot = document.getElementById('strategyTimeline');
-  timelineEvents.forEach((e) => {
-    const node = document.createElement('div');
-    node.className = 'tl-node ' + e.category;
-    node.innerHTML =
-      '<span class="dot"></span>' +
-      '<div class="date"></div>' +
-      '<span class="tag"></span>' +
-      '<div class="event"></div>' +
-      '<div class="meaning"></div>' +
-      '<div class="src"></div>';
-    node.querySelector('.date').textContent = e.date;
-    node.querySelector('.tag').textContent = e.category === 'silicon' ? 'Silicon strategy' : 'Capex pressure';
-    node.querySelector('.event').textContent = e.event;
-    node.querySelector('.meaning').textContent = e.meaning;
-    node.querySelector('.src').textContent = 'Source: ' + e.source;
-    tlRoot.appendChild(node);
-  });
-
-  // ---- MTIA roadmap ----------------------------------------------------------
-  const chips = [
-    {
-      name: 'MTIA 300',
-      workload: 'training',
-      workloadLabel: 'Training (ranking/recommendation)',
-      status: 'production',
-      statusLabel: 'In production',
-      notes: 'Already in production; used for ranking/recommendation model training — not frontier LLMs.',
-      source: 'Meta Engineering blog, Mar 11 2026',
-    },
-    {
-      name: 'MTIA 400',
-      workload: 'inference',
-      workloadLabel: 'Inference (GenAI)',
-      status: 'announced',
-      statusLabel: 'Announced',
-      notes: 'Inference-focused, primarily GenAI (image/video generation). One datacenter rack holds 72 MTIA 400 chips.',
-      source: 'Meta Engineering blog, Mar 11 2026',
-    },
-    {
-      name: 'MTIA 450',
-      workload: 'inference',
-      workloadLabel: 'Inference (GenAI)',
-      status: 'announced',
-      statusLabel: 'Announced',
-      notes: 'Inference-focused, primarily GenAI workloads.',
-      source: 'Meta Engineering blog, Mar 11 2026',
-    },
-    {
-      name: 'MTIA 500',
-      workload: 'inference',
-      workloadLabel: 'Inference (GenAI)',
-      status: 'announced',
-      statusLabel: 'Announced',
-      notes: 'Inference-focused, primarily GenAI workloads.',
-      source: 'Meta Engineering blog, Mar 11 2026',
-    },
-  ];
-
-  const roadmapRoot = document.getElementById('mtiaRoadmap');
-  chips.forEach((chip) => {
-    const card = document.createElement('div');
-    card.className = 'chip-card';
-    const h3 = document.createElement('h3');
-    h3.textContent = chip.name;
-    const badgeWorkload = document.createElement('span');
-    badgeWorkload.className = 'badge workload-' + chip.workload;
-    badgeWorkload.textContent = chip.workloadLabel;
-    const badgeStatus = document.createElement('span');
-    badgeStatus.className = 'badge status-' + chip.status;
-    badgeStatus.innerHTML = '<span class="dot-sm"></span>';
-    badgeStatus.appendChild(document.createTextNode(chip.statusLabel));
-    const notes = document.createElement('p');
-    notes.className = 'notes';
-    notes.textContent = chip.notes;
-    const src = document.createElement('div');
-    src.className = 'src';
-    src.textContent = 'Source: ' + chip.source;
-    card.appendChild(h3);
-    card.appendChild(badgeWorkload);
-    card.appendChild(badgeStatus);
-    card.appendChild(notes);
-    card.appendChild(src);
-    roadmapRoot.appendChild(card);
-  });
-})();
+new Chart(document.getElementById('financialChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Revenue', 'Operating income', 'Net income', 'Free cash flow'],
+    datasets: [
+      {label:'Q2 2025 ($B)', data:[47.516,20.441,18.337,8.505], backgroundColor:'#aab9cf'},
+      {label:'Q2 2026 ($B)', data:[60.801,18.775,15.848,0.784], backgroundColor:'#2b6fd3'}
+    ]
+  },
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}},scales:{y:{beginAtZero:true,title:{display:true,text:'USD billions'}}}}
+});
 </script>
 </body>
 </html>

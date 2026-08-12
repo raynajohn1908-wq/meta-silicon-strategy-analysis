@@ -6,67 +6,122 @@
 <title>Meta Custom Silicon Strategy Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 <style>
-:root{--bg:#f7f7f5;--card:#fff;--text:#111;--muted:#666;--line:#e4e4df;--blue:#2b6fd3;--orange:#df6b35;--green:#1b9b6b}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5}.wrap{max-width:1100px;margin:auto;padding:36px 20px 64px}h1{font-size:2rem;line-height:1.15;margin:0 0 10px}.sub{max-width:820px;color:var(--muted);margin:0 0 8px}.asof{font-size:.82rem;color:var(--muted);margin-bottom:28px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-bottom:24px}.kpi,.card{background:var(--card);border:1px solid var(--line);border-radius:12px}.kpi{padding:16px}.kpi .label{font-size:.78rem;color:var(--muted)}.kpi .value{font-size:1.55rem;font-weight:700;margin:4px 0}.kpi .note{font-size:.78rem;color:var(--muted)}.card{padding:22px;margin-bottom:20px}.card h2{margin:0 0 6px;font-size:1.15rem}.desc{color:var(--muted);font-size:.9rem;margin:0 0 18px}.chart{height:330px}.roadmap{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}.chip{border:1px solid var(--line);border-radius:10px;padding:14px}.chip h3{margin:0 0 6px}.pill{display:inline-block;border-radius:999px;padding:3px 8px;background:#eef3fb;color:#245ea9;font-size:.72rem;margin:0 4px 6px 0}.chip p{font-size:.82rem;color:var(--muted);margin:6px 0}.timeline{display:grid;gap:10px}.event{border-left:3px solid var(--blue);padding:4px 0 4px 12px}.event.fin{border-left-color:var(--orange)}.event .date{font-size:.76rem;color:var(--muted)}.event strong{display:block;font-size:.92rem}.event span{display:block;color:var(--muted);font-size:.82rem}.finding{border-left:4px solid var(--green);padding:12px 14px;background:#f1faf6;border-radius:8px}.source{font-size:.76rem;color:var(--muted);margin-top:14px}a{color:var(--blue)}footer{font-size:.78rem;color:var(--muted);margin-top:28px}
+:root{--bg:#f7f7f5;--card:#fff;--text:#111;--muted:#666;--line:#e4e4df;--blue:#2b6fd3;--orange:#df6b35;--green:#1b9b6b;--soft:#eef3fb}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5}.wrap{max-width:1120px;margin:auto;padding:36px 20px 64px}h1{font-size:2rem;line-height:1.15;margin:0 0 10px}.sub{max-width:860px;color:var(--muted);margin:0 0 8px}.asof{font-size:.82rem;color:var(--muted);margin-bottom:28px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-bottom:24px}.kpi,.card{background:var(--card);border:1px solid var(--line);border-radius:12px}.kpi{padding:16px}.kpi .label{font-size:.78rem;color:var(--muted)}.kpi .value{font-size:1.55rem;font-weight:700;margin:4px 0}.kpi .note{font-size:.78rem;color:var(--muted)}.card{padding:22px;margin-bottom:20px}.card h2{margin:0 0 6px;font-size:1.15rem}.desc{color:var(--muted);font-size:.9rem;margin:0 0 18px}.chart{height:340px}.finding{border-left:4px solid var(--green);padding:12px 14px;background:#f1faf6;border-radius:8px}.roadmap,.portfolio,.framework{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}.chip,.portfolio-item,.framework-item{border:1px solid var(--line);border-radius:10px;padding:14px}.chip h3,.portfolio-item h3,.framework-item h3{margin:0 0 6px;font-size:.98rem}.pill{display:inline-block;border-radius:999px;padding:3px 8px;background:var(--soft);color:#245ea9;font-size:.72rem;margin:0 4px 6px 0}.chip p,.portfolio-item p,.framework-item p{font-size:.82rem;color:var(--muted);margin:6px 0}.timeline{display:grid;gap:10px}.event{border-left:3px solid var(--blue);padding:4px 0 4px 12px}.event.fin{border-left-color:var(--orange)}.event .date{font-size:.76rem;color:var(--muted)}.event strong{display:block;font-size:.92rem}.event span{display:block;color:var(--muted);font-size:.82rem}.source{font-size:.76rem;color:var(--muted);margin-top:14px}a{color:var(--blue)}footer{font-size:.78rem;color:var(--muted);margin-top:28px}table{width:100%;border-collapse:collapse;font-size:.84rem}th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}th{font-size:.78rem;color:var(--muted);font-weight:600}
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1>Meta Custom Silicon Strategy Analysis</h1>
-  <p class="sub">Does MTIA materially improve Meta's AI infrastructure economics, or mainly improve workload efficiency and supplier diversification while total infrastructure spending continues to rise?</p>
-  <p class="asof">Public-data snapshot through Meta's Q2 2026 results released July 29, 2026.</p>
+  <p class="sub">How should Meta place workloads across MTIA, NVIDIA, AMD, and supporting infrastructure while balancing economics, power efficiency, supply flexibility, software portability, and developer velocity?</p>
+  <p class="asof">Public-data snapshot through Meta's Q2 2026 results released July 29, 2026. Primary-source ledger available in <a href="../docs/SOURCES.md">docs/SOURCES.md</a>.</p>
 
   <div class="grid">
-    <div class="kpi"><div class="label">FY2026 capex guidance</div><div class="value">$130B–$145B</div><div class="note">Narrowed from $125B–$145B</div></div>
-    <div class="kpi"><div class="label">Q2 2026 revenue</div><div class="value">$60.801B</div><div class="note">+28% YoY</div></div>
-    <div class="kpi"><div class="label">Q2 2026 free cash flow</div><div class="value">$0.784B</div><div class="note">vs. $8.505B in Q2 2025</div></div>
-    <div class="kpi"><div class="label">Q2 2026 capex</div><div class="value">$31.08B</div><div class="note">~51% of quarterly revenue</div></div>
+    <div class="kpi"><div class="label">FY2026 capex guidance</div><div class="value">$130B-$145B</div><div class="note">Narrowed from $125B-$145B</div></div>
+    <div class="kpi"><div class="label">Q2 2026 revenue</div><div class="value">$60.801B</div><div class="note">Up 28% YoY</div></div>
+    <div class="kpi"><div class="label">Q2 2026 free cash flow</div><div class="value">$0.784B</div><div class="note">Versus $8.549B in Q2 2025</div></div>
+    <div class="kpi"><div class="label">Q2 2026 capex</div><div class="value">$31.08B</div><div class="note">About 51% of quarterly revenue</div></div>
   </div>
 
   <section class="card">
     <h2>Financial context</h2>
-    <p class="desc">Meta's revenue remained strong while operating income, net income, and free cash flow declined year over year during a quarter with very high infrastructure investment.</p>
-    <div class="chart"><canvas id="financialChart"></canvas></div>
+    <p class="desc">The chart compares the same four reported metrics across Q2 2025 and Q2 2026. It provides economic context, not a causal test of MTIA.</p>
+    <div class="chart"><canvas id="financialChart" role="img" aria-label="Bar chart comparing Q2 2025 and Q2 2026 revenue, operating income, net income, and free cash flow in billions of dollars"></canvas></div>
     <div class="source">Source: Meta Platforms Q2 2026 Results, July 29, 2026.</div>
   </section>
 
   <section class="card">
-    <h2>What the public data actually supports</h2>
-    <div class="finding"><strong>MTIA can improve workload-level economics without reducing total company capex.</strong> Meta says its custom full-stack approach is more compute- and cost-efficient for intended workloads, but total spending can still rise as AI demand, model complexity, and data-center capacity grow.</div>
-    <p class="desc" style="margin-top:14px">The missing evidence is a comparable MTIA-vs-external-accelerator cost-per-query/TCO series and a spending split by silicon type. Without those, a precise MTIA ROI estimate would be false precision.</p>
+    <h2>Product conclusion</h2>
+    <div class="finding"><strong>Total capex is not the right standalone success metric for MTIA.</strong> Public evidence supports workload-level efficiency and a broader portfolio strategy. The better product test is whether Meta can route workloads to the best available hardware with strong unit economics, power efficiency, reliability, supply flexibility, and manageable software friction.</div>
+  </section>
+
+  <section class="card">
+    <h2>Product decision framework</h2>
+    <p class="desc">These are the decision dimensions an infrastructure product team would need to weigh. Public disclosures support the importance of several of them, but Meta does not publish enough data to score every dimension externally.</p>
+    <div class="framework">
+      <div class="framework-item"><h3>Workload fit</h3><p>Match the accelerator to training or inference needs, model requirements, latency, and throughput.</p></div>
+      <div class="framework-item"><h3>Performance / dollar</h3><p>Compare useful throughput delivered per unit of cost.</p></div>
+      <div class="framework-item"><h3>Performance / watt</h3><p>Measure how efficiently each path uses constrained power and data-center capacity.</p></div>
+      <div class="framework-item"><h3>Software portability</h3><p>Estimate the engineering work required to move workloads across hardware paths.</p></div>
+      <div class="framework-item"><h3>Developer velocity</h3><p>Evaluate whether the infrastructure reduces hardware-specific friction for model teams.</p></div>
+      <div class="framework-item"><h3>Reliability & maturity</h3><p>Determine whether the full hardware and software path is production-ready at Meta scale.</p></div>
+      <div class="framework-item"><h3>Capacity & supply</h3><p>Assess resilience to vendor concentration, constrained supply, and rapid demand growth.</p></div>
+      <div class="framework-item"><h3>Total cost of ownership</h3><p>Capture deployment, operation, support, and infrastructure costs by workload.</p></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Why software portability is part of the product</h2>
+    <p class="desc">A heterogeneous hardware portfolio only creates value if teams can use it without excessive hardware-specific engineering work.</p>
+    <table>
+      <thead><tr><th>Public disclosure</th><th>What it signals</th></tr></thead>
+      <tbody>
+        <tr><td>MTIA strategy, March 11</td><td>Meta emphasizes frictionless adoption through industry standards.</td></tr>
+        <tr><td>NVIDIA partnership, February 17</td><td>Meta describes co-design across hardware, networking, and software.</td></tr>
+        <tr><td>AMD partnership, February 24</td><td>Meta aligns roadmaps across silicon, systems, and software.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="card">
+    <h2>Portfolio evidence</h2>
+    <p class="desc">Meta's 2026 announcements show a portfolio strategy rather than a single-vendor or custom-only path.</p>
+    <div class="portfolio">
+      <div class="portfolio-item"><h3>NVIDIA</h3><span class="pill">External accelerators</span><p>Multi-year partnership supporting AI training and inference, with performance-per-watt and co-design goals.</p></div>
+      <div class="portfolio-item"><h3>AMD</h3><span class="pill">Up to 6GW</span><p>Instinct GPU agreement and roadmap alignment across silicon, systems, and software.</p></div>
+      <div class="portfolio-item"><h3>MTIA</h3><span class="pill">Custom accelerator</span><p>Four new generations in two years with an inference-first strategy and broader workload capability.</p></div>
+      <div class="portfolio-item"><h3>Arm</h3><span class="pill">Custom CPU</span><p>Multi-generation data-center CPU collaboration designed to work alongside MTIA and improve performance density.</p></div>
+      <div class="portfolio-item"><h3>Broadcom</h3><span class="pill">MTIA co-development</span><p>Multi-generation custom-silicon partnership. Meta explicitly cites workload matching, performance, and TCO.</p></div>
+    </div>
   </section>
 
   <section class="card">
     <h2>MTIA roadmap</h2>
-    <p class="desc">Meta describes the newer roadmap as inference-first in near-term deployment—not permanently inference-only.</p>
+    <p class="desc">Meta describes the newer roadmap as inference-first in near-term deployment, not permanently inference-only.</p>
     <div class="roadmap">
       <div class="chip"><h3>MTIA 300</h3><span class="pill">In production</span><span class="pill">Training</span><p>Used for ranking and recommendation training.</p></div>
-      <div class="chip"><h3>MTIA 400</h3><span class="pill">Developing / deploying</span><span class="pill">GenAI inference first</span><p>Meta says it is capable of handling all workloads, with near-term use focused primarily on GenAI inference.</p></div>
-      <div class="chip"><h3>MTIA 450</h3><span class="pill">Developing / deploying</span><span class="pill">GenAI inference first</span><p>Broader workload capability; near-term deployment remains inference-first.</p></div>
-      <div class="chip"><h3>MTIA 500</h3><span class="pill">Developing / deploying</span><span class="pill">GenAI inference first</span><p>Part of the four-generation, two-year roadmap extending into 2027.</p></div>
+      <div class="chip"><h3>MTIA 400</h3><span class="pill">Developing / deploying</span><span class="pill">GenAI inference first</span><p>Capable of all workloads, with near-term use focused primarily on GenAI inference.</p></div>
+      <div class="chip"><h3>MTIA 450</h3><span class="pill">Developing / deploying</span><span class="pill">GenAI inference first</span><p>Capable of all workloads and optimized first for GenAI inference.</p></div>
+      <div class="chip"><h3>MTIA 500</h3><span class="pill">Developing / deploying</span><span class="pill">GenAI inference first</span><p>Capable of all workloads and part of the roadmap extending into 2027.</p></div>
     </div>
-    <div class="source">Source: Meta, “Expanding Meta's Custom Silicon to Power Our AI Workloads,” March 11, 2026.</div>
+    <div class="source">Source: Meta, "Expanding Meta's Custom Silicon to Power Our AI Workloads," March 11, 2026.</div>
   </section>
 
   <section class="card">
     <h2>Strategy timeline</h2>
     <div class="timeline">
-      <div class="event"><div class="date">2023</div><strong>MTIA custom-silicon family emerges</strong><span>Meta begins building workload-specific accelerators inside its own infrastructure stack.</span></div>
-      <div class="event"><div class="date">February 24, 2026</div><strong>Meta announces long-term AMD infrastructure agreement</strong><span>External accelerators remain part of the scaling plan.</span></div>
-      <div class="event"><div class="date">March 11, 2026</div><strong>Four new MTIA generations announced within two years</strong><span>Rapid iteration, inference-first deployment, broader workload capability.</span></div>
-      <div class="event"><div class="date">April 14, 2026</div><strong>Broadcom multi-generation partnership expands</strong><span>Custom silicon becomes a durable, multi-generation infrastructure program.</span></div>
+      <div class="event"><div class="date">2023</div><strong>MTIA custom-silicon family emerges</strong><span>Meta begins building workload-specific accelerators inside its AI infrastructure stack.</span></div>
+      <div class="event"><div class="date">February 17, 2026</div><strong>Long-term NVIDIA infrastructure partnership</strong><span>Large-scale external accelerator deployment remains central to training and inference.</span></div>
+      <div class="event"><div class="date">February 24, 2026</div><strong>Long-term AMD infrastructure agreement</strong><span>Up to 6GW of Instinct GPUs and explicit portfolio-based infrastructure strategy.</span></div>
+      <div class="event"><div class="date">March 11, 2026</div><strong>Four new MTIA generations announced within two years</strong><span>Rapid iteration, inference-first deployment, broader workload capability, and frictionless adoption through standards.</span></div>
+      <div class="event"><div class="date">March 24, 2026</div><strong>Multi-generation Arm CPU partnership</strong><span>Custom data-center CPUs join the broader silicon portfolio and are designed to work alongside MTIA.</span></div>
+      <div class="event"><div class="date">April 14, 2026</div><strong>Broadcom multi-generation partnership expands</strong><span>Meta describes matching the right accelerator to each workload for performance and TCO.</span></div>
       <div class="event fin"><div class="date">May 2026</div><strong>Approximately 8,000 employees impacted by headcount reduction</strong><span>Q2 later included $1.18B of related severance expense. This is financial context, not evidence that MTIA caused the reduction.</span></div>
       <div class="event fin"><div class="date">July 29, 2026</div><strong>Q2 results show $31.08B quarterly capex and $784M free cash flow</strong><span>The infrastructure build remains economically significant even as revenue grows 28% YoY.</span></div>
     </div>
   </section>
 
   <section class="card">
-    <h2>Bottom line</h2>
-    <p class="desc">The most defensible conclusion is not “MTIA is cutting Meta's total capex.” It is: <strong>MTIA appears strategically useful for workload efficiency and silicon diversification, but the public data is not sufficient to quantify total savings.</strong></p>
-    <p><a href="../docs/RECOMMENDATION_MEMO.md">Read the full strategy memo →</a></p>
+    <h2>What public data still cannot answer</h2>
+    <p class="desc">A precise MTIA ROI would require internal variables that Meta does not publicly disclose.</p>
+    <table>
+      <thead><tr><th>Missing variable</th><th>Why it matters</th></tr></thead>
+      <tbody>
+        <tr><td>Like-for-like accelerator TCO</td><td>Needed to quantify unit-cost savings on comparable workloads.</td></tr>
+        <tr><td>Silicon spending or deployed-compute mix</td><td>Needed to measure how much of the portfolio is shifting toward custom silicon.</td></tr>
+        <tr><td>Migration engineering effort</td><td>Needed to quantify software portability and developer-velocity costs.</td></tr>
+        <tr><td>Demand-normalized infrastructure cost</td><td>Needed to separate efficiency gains from rapid growth in AI workload volume and complexity.</td></tr>
+      </tbody>
+    </table>
   </section>
 
-  <footer>Primary sources: Meta Platforms Q2 2026 Results (July 29, 2026); Meta Newsroom MTIA roadmap (March 11, 2026); AMD infrastructure agreement (February 24, 2026); Broadcom custom-silicon partnership (April 14, 2026).</footer>
+  <section class="card">
+    <h2>Bottom line</h2>
+    <p class="desc"><strong>Public evidence supports MTIA as an efficiency, flexibility, and diversification strategy.</strong> It does not prove that MTIA lowers Meta's total infrastructure bill. The product value of heterogeneous compute depends on both hardware economics and the software and systems layer that makes the hardware usable.</p>
+    <p><a href="../docs/RECOMMENDATION_MEMO.md">Read the product decision memo</a> · <a href="../docs/SOURCES.md">Review primary sources</a></p>
+  </section>
+
+  <footer>Primary sources: Meta Investor Relations and Meta Newsroom. Data current through July 29, 2026.</footer>
 </div>
 <script>
 new Chart(document.getElementById('financialChart'), {
@@ -74,7 +129,7 @@ new Chart(document.getElementById('financialChart'), {
   data: {
     labels: ['Revenue', 'Operating income', 'Net income', 'Free cash flow'],
     datasets: [
-      {label:'Q2 2025 ($B)', data:[47.516,20.441,18.337,8.505], backgroundColor:'#aab9cf'},
+      {label:'Q2 2025 ($B)', data:[47.516,20.441,18.337,8.549], backgroundColor:'#aab9cf'},
       {label:'Q2 2026 ($B)', data:[60.801,18.775,15.848,0.784], backgroundColor:'#2b6fd3'}
     ]
   },

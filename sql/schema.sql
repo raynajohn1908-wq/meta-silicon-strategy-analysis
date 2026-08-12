@@ -1,4 +1,4 @@
--- Meta Silicon Strategy Analysis — sourced public-data schema
+-- Meta Silicon Strategy Analysis: sourced public-data schema
 
 PRAGMA foreign_keys = ON;
 

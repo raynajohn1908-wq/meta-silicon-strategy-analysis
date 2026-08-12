@@ -1,37 +1,60 @@
 # Meta Custom Silicon Strategy Analysis
 
-**Public-data strategy analysis of whether Meta's MTIA custom silicon can materially improve AI infrastructure economics while the company continues scaling third-party accelerators.**
+**Public-data analysis of Meta's custom silicon strategy, AI infrastructure economics, and heterogeneous compute portfolio.**
 
-**Python · SQL · SQLite · Chart.js · Financial & Strategy Analysis**
+**Python · SQL · SQLite · Chart.js · Product & Strategy Analysis**
 
-> **Key finding:** Meta's disclosures support MTIA as a workload-optimized, cost-efficient part of a broader silicon portfolio, but public data still does not provide the cost-per-inference or GPU-vs-custom-silicon spending detail needed to quantify how much MTIA reduces total infrastructure cost.
+> **Key finding:** Meta's disclosures support MTIA as a workload-optimized, cost-efficient part of a broader silicon portfolio, but public data still does not provide the cost-per-inference, software-portability, or silicon-spend detail needed to quantify the full value of MTIA across the infrastructure stack.
 
 [View the dashboard](exports/dashboard.html) · [Read the strategy memo](docs/RECOMMENDATION_MEMO.md)
 
-## The question
+## The product question
 
-Meta is simultaneously accelerating its custom-silicon roadmap and expanding external compute capacity. At the same time, its 2026 capital-expenditure guidance remains exceptionally large.
+Meta is not choosing between custom silicon and external accelerators. It is operating a heterogeneous compute portfolio across MTIA, NVIDIA, and AMD while using software layers such as PyTorch, compilers, runtimes, and serving systems to make workloads portable across hardware.
 
 This case study asks:
 
-**Is MTIA beginning to relieve Meta's AI infrastructure cost pressure, or is it primarily improving workload efficiency and supplier diversification while total infrastructure investment continues to rise?**
+**How should Meta decide which workloads run on which accelerators, and what evidence would show that its heterogeneous compute portfolio is improving infrastructure economics, flexibility, and developer velocity?**
 
-The answer from public data is deliberately limited: **we can identify the strategic logic and the metrics that matter, but we cannot yet calculate MTIA's net savings.** Meta has not disclosed a comparable cost-per-query/TCO series for MTIA versus external accelerators or a capex split by silicon type.
+The answer from public data is deliberately limited: **we can identify the strategic logic and the product metrics that matter, but we cannot calculate the full ROI of MTIA from outside the company.** Meta has not disclosed a comparable cost-per-query/TCO series by accelerator, a silicon-spend split, or enough public data to quantify the engineering cost of portability across hardware.
+
+## Product decision framework
+
+A useful infrastructure-product decision is broader than asking whether total capex falls. The decision should consider:
+
+| Decision dimension | Product question |
+|---|---|
+| **Workload fit** | Which accelerator best matches the model architecture, latency target, batch profile, and training/inference workload? |
+| **Performance / dollar** | How much useful throughput does each hardware path deliver per unit of cost? |
+| **Performance / watt** | Which option uses constrained power and data-center capacity most efficiently? |
+| **Software portability** | How much work is required to move a workload across MTIA, NVIDIA, and AMD? |
+| **Developer velocity** | Does the software stack reduce hardware-specific friction for model teams? |
+| **Reliability & maturity** | Is the accelerator and software path production-ready at Meta scale? |
+| **Capacity & supply** | Does the portfolio reduce dependence on a single vendor or constrained supply source? |
+| **Total cost of ownership** | What is the end-to-end cost to deploy, operate, and support the workload? |
+
+### Why software portability matters
+
+A heterogeneous hardware strategy only creates product value if workloads can move across accelerators without excessive engineering friction. That makes the software layer—PyTorch, compiler/runtime infrastructure, serving systems, and kernel optimization—a strategic part of the compute portfolio rather than a separate implementation detail.
+
+The product question is therefore not simply **“Is MTIA cheaper?”** It is:
+
+**“Can Meta route each workload to the best hardware while preserving developer velocity, reliability, and performance at scale?”**
 
 ## Architecture
 
 ```text
-Public company disclosures + Meta engineering disclosures
-                         ↓
-                    Python ETL
-                         ↓
-                 SQLite warehouse
-                         ↓
-                 SQL analytical views
-                         ↓
-                 Derived analysis
-                         ↓
-        Interactive dashboard + strategy memo
+Public company + engineering disclosures
+                    ↓
+               Python ETL
+                    ↓
+            SQLite warehouse
+                    ↓
+            SQL analytical views
+                    ↓
+            Product interpretation
+                    ↓
+     Dashboard + strategy recommendation
 ```
 
 ## What's in this repo
@@ -40,10 +63,10 @@ Public company disclosures + Meta engineering disclosures
 |---|---|
 | `sql/schema.sql` | Five-table SQLite schema; every fact row requires a source |
 | `etl/load_data.py` | Loads cited public figures into `data/meta_silicon_strategy.db` |
-| `sql/views.sql` | Capex scale check, chronological strategy timeline, and workload-scope framing |
+| `sql/views.sql` | Capex scale check, chronological strategy timeline, and workload-scope analysis |
 | `etl/derived_analysis.py` | Runs analytical views and exports `data/derived_analysis.json` |
-| `docs/RECOMMENDATION_MEMO.md` | Strategy memo: evidence, limitations, interpretation, and decision-relevant metrics |
-| `exports/dashboard.html` | Interactive Chart.js dashboard for the financial tension, silicon timeline, and MTIA roadmap |
+| `docs/RECOMMENDATION_MEMO.md` | Product/strategy memo: evidence, limitations, decision framework, and metrics to watch |
+| `exports/dashboard.html` | Interactive Chart.js dashboard for financial context, MTIA roadmap, and product decision criteria |
 
 ## Reproduce the analysis
 
@@ -76,9 +99,9 @@ Then open `exports/dashboard.html` in a browser. Chart.js is loaded from a CDN; 
 
 ## What the evidence supports
 
-Meta explicitly describes MTIA as part of a **portfolio approach** to AI infrastructure rather than a full replacement for external accelerators. Its newer MTIA generations are designed around an inference-first strategy, while remaining capable of supporting additional workloads. Meta also says its custom full-stack approach improves compute and cost efficiency for intended workloads.
+Meta's public disclosures support a **portfolio approach** rather than a full replacement path for external accelerators. Custom silicon can improve workload-level economics and supplier flexibility while external accelerators continue to provide scale, ecosystem depth, and capacity.
 
-That supports a strong operational thesis: **custom silicon can improve workload-level economics and reduce dependence on any single external silicon supplier.** It does **not** prove that total company infrastructure spending will decline, because Meta is simultaneously adding data-center capacity and external compute.
+That means a decline in total capex is **not required** for MTIA to be successful. A better product test is whether Meta can absorb rapidly growing AI demand with better unit economics, power efficiency, portability, and operational flexibility.
 
 ## What remains undisclosed
 
@@ -86,12 +109,13 @@ The central ROI question cannot be solved from public disclosures because Meta h
 
 - a comparable MTIA-vs-external-accelerator cost-per-query or TCO time series;
 - a GPU/external-accelerator vs. MTIA capex split;
-- enough detail to isolate savings from MTIA from the effects of rapidly growing AI demand and data-center expansion.
+- public metrics for developer effort or migration friction across hardware;
+- enough detail to isolate MTIA efficiency gains from rapidly growing AI demand and data-center expansion.
 
 Those are not flaws to estimate around—they are the decision-relevant missing variables.
 
 ## Why this project exists
 
-The goal is not to prove a predetermined thesis. It is to demonstrate an end-to-end analytics workflow: source real business data, model it, analyze it, communicate what the evidence supports, and state clearly where the data stops supporting a conclusion.
+The goal is not to prove a predetermined thesis. It is to demonstrate an end-to-end product analytics workflow: source real business data, model it, identify the actual decision, define success metrics, communicate what the evidence supports, and state clearly where the data stops supporting a conclusion.
 
 **Data current through Meta's Q2 2026 results released July 29, 2026.**

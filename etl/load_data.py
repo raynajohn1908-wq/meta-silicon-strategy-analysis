@@ -9,6 +9,7 @@ SCHEMA_PATH = ROOT / "sql" / "schema.sql"
 
 SRC_Q2 = "Meta Platforms Q2 2026 Results, July 29 2026"
 SRC_MTIA = "Meta Newsroom, Expanding Meta's Custom Silicon to Power Our AI Workloads, Mar 11 2026"
+SRC_NVIDIA = "Meta Newsroom, Meta and NVIDIA Announce Long-Term Infrastructure Partnership, Feb 17 2026"
 SRC_AMD = "Meta Newsroom, Meta and AMD Partner for Longterm AI Infrastructure Agreement, Feb 24 2026"
 SRC_BROADCOM = "Meta Newsroom, Meta Partners With Broadcom to Co-Develop Custom AI Silicon, Apr 14 2026"
 
@@ -92,12 +93,15 @@ def load(conn: sqlite3.Connection) -> None:
             ("2023", "2023-01-01", "silicon_strategy",
              "Meta develops the MTIA custom-silicon family",
              "Meta begins building workload-specific accelerators as part of its internal AI infrastructure stack.", SRC_MTIA),
+            ("February 17, 2026", "2026-02-17", "silicon_strategy",
+             "Meta announces a long-term NVIDIA infrastructure partnership",
+             "Meta continues large-scale external accelerator deployment for training and inference, with co-design across hardware, networking, and software.", SRC_NVIDIA),
             ("February 24, 2026", "2026-02-24", "silicon_strategy",
              "Meta announces long-term AMD AI infrastructure agreement",
              "External accelerators remain part of the scaling plan; custom silicon is complementary, not a clean replacement path.", SRC_AMD),
             ("March 11, 2026", "2026-03-11", "silicon_strategy",
              "Meta announces four new MTIA generations within two years",
-             "The roadmap emphasizes rapid iteration and an inference-first deployment strategy while keeping broader workload capability.", SRC_MTIA),
+             "The roadmap emphasizes rapid iteration, an inference-first deployment strategy, and frictionless adoption through industry standards.", SRC_MTIA),
             ("April 14, 2026", "2026-04-14", "silicon_strategy",
              "Meta expands Broadcom partnership across multiple MTIA generations",
              "The custom-silicon program is a sustained multi-generation infrastructure strategy.", SRC_BROADCOM),

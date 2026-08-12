@@ -35,7 +35,7 @@ A useful infrastructure-product decision is broader than asking whether total ca
 
 ### Why software portability matters
 
-A heterogeneous hardware strategy only creates product value if workloads can move across accelerators without excessive engineering friction. That makes the software layer—PyTorch, compiler/runtime infrastructure, serving systems, and kernel optimization—a strategic part of the compute portfolio rather than a separate implementation detail.
+A heterogeneous hardware strategy only creates product value if workloads can move across accelerators without excessive engineering friction. That makes the software layer, including PyTorch, compiler/runtime infrastructure, serving systems, and kernel optimization, a strategic part of the compute portfolio rather than a separate implementation detail.
 
 The product question is therefore not simply **“Is MTIA cheaper?”** It is:
 
@@ -112,7 +112,7 @@ The central ROI question cannot be solved from public disclosures because Meta h
 - public metrics for developer effort or migration friction across hardware;
 - enough detail to isolate MTIA efficiency gains from rapidly growing AI demand and data-center expansion.
 
-Those are not flaws to estimate around—they are the decision-relevant missing variables.
+Those are not flaws to estimate around. They are the decision-relevant missing variables.
 
 ## Why this project exists
 

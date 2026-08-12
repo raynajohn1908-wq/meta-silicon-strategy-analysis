@@ -8,9 +8,9 @@
 
 ## Executive conclusion
 
-Meta's custom-silicon program has a credible strategic role: improve compute efficiency for workloads Meta can optimize end-to-end, reduce dependence on any single external silicon supplier, and give the company more flexibility across a heterogeneous accelerator portfolio.
+Meta's custom-silicon program has a credible strategic role: improve compute efficiency for workloads Meta can optimize end to end, reduce dependence on any single external silicon supplier, and increase flexibility across a heterogeneous compute portfolio.
 
-Public disclosures do **not** yet support a quantified claim that MTIA is reducing Meta's total AI infrastructure spending. A better product question is therefore:
+Public disclosures do **not** yet support a quantified claim that MTIA is reducing Meta's total AI infrastructure spending. A better product question is:
 
 **Can Meta route each workload to the best hardware while preserving developer velocity, reliability, and performance at scale?**
 
@@ -18,7 +18,7 @@ The strongest public conclusion is:
 
 **MTIA appears to improve workload-level economics and strategic flexibility, while Meta's total infrastructure investment remains driven by rapidly expanding AI demand.**
 
-The most decision-relevant missing evidence is a comparable cost-per-inference/TCO series, a spending or deployed-compute split by accelerator type, and public measures of migration friction or developer effort across hardware.
+The most decision-relevant missing evidence is a comparable cost-per-inference or TCO series, a spending or deployed-compute split by accelerator type, and public measures of migration friction or developer effort across hardware.
 
 ## 1. Financial context
 
@@ -28,7 +28,7 @@ Meta reported Q2 2026 results on **July 29, 2026**. The quarter shows why infras
 - Costs and expenses were **$42.026B**, up 55% YoY.
 - Operating income was **$18.775B**, down 8% YoY.
 - Net income was **$15.848B**, down 14% YoY.
-- Free cash flow was **$784M**, versus **$8.505B** in Q2 2025, a decline of roughly 91%.
+- Free cash flow was **$784M**, versus **$8.549B** in Q2 2025.
 - Q2 capital expenditures were **$31.08B**.
 - Full-year 2026 capex guidance was narrowed to **$130B-$145B** from $125B-$145B.
 - Full-year 2026 total-expense guidance was raised at the low end to **$165B-$169B**.
@@ -39,7 +39,7 @@ These figures do not prove that MTIA is succeeding or failing. They establish th
 
 ## 2. What MTIA is designed to do
 
-Meta describes MTIA as part of a broader **portfolio approach** to AI infrastructure: use the accelerator best suited to each workload rather than standardizing on one architecture.
+Meta describes MTIA as part of a broader portfolio approach to AI infrastructure: match the right accelerator to each workload rather than standardizing on one architecture.
 
 Meta's March 11, 2026 disclosure says:
 
@@ -48,7 +48,8 @@ Meta's March 11, 2026 disclosure says:
 - MTIA 400, 450, and 500 will be **capable of handling all workloads**;
 - in the near term and into 2027, Meta expects to use those newer generations primarily for **GenAI inference production**;
 - Meta deploys **hundreds of thousands** of MTIA chips for inference across organic content and ads;
-- Meta says its custom full-stack design achieves greater compute efficiency than general-use chips for intended workloads, improving cost efficiency.
+- Meta says its custom full-stack design achieves greater compute efficiency than general-use chips for intended workloads, improving cost efficiency;
+- its strategy emphasizes rapid iteration, inference-first optimization, and frictionless adoption through industry standards.
 
 That means MTIA should not be evaluated as a standalone replacement for external accelerators. The product decision is about **workload placement across a portfolio**.
 
@@ -56,17 +57,21 @@ That means MTIA should not be evaluated as a standalone replacement for external
 
 A heterogeneous hardware portfolio only creates value if teams can use it without excessive hardware-specific engineering friction.
 
-That makes the software abstraction layer strategically important. In a portfolio spanning MTIA, NVIDIA, and AMD, infrastructure-product quality depends not only on accelerator performance, but also on whether compilers, runtimes, model frameworks, serving systems, and kernel optimization make workloads portable across hardware.
+Meta's public disclosures support this point directly:
+
+- the MTIA strategy emphasizes frictionless adoption through industry standards;
+- the AMD agreement aligns roadmaps across silicon, systems, and software;
+- the NVIDIA partnership includes co-design across hardware, networking, and software.
 
 From a product perspective, software portability matters because it affects:
 
-- **developer velocity**: how quickly model teams can adopt or switch hardware paths;
-- **migration cost**: how much engineering effort is required to move a workload;
-- **reliability**: whether the full software/hardware path is production-ready;
-- **optionality**: whether Meta can shift workloads when supply, cost, or capacity changes;
-- **time to value**: whether new accelerator capacity can be productively used quickly.
+- **developer velocity:** how quickly model teams can adopt or switch hardware paths;
+- **migration cost:** how much engineering effort is required to move a workload;
+- **reliability:** whether the full hardware and software path is production-ready;
+- **optionality:** whether Meta can shift workloads when supply, cost, or capacity changes;
+- **time to value:** whether new accelerator capacity can be productively used quickly.
 
-The relevant question is therefore not just **“Is MTIA cheaper?”** It is **“Can Meta use the best accelerator for each workload without creating unacceptable software friction?”**
+The relevant question is therefore not just **"Is MTIA cheaper?"** It is **"Can Meta use the best accelerator for each workload without creating unacceptable software friction?"**
 
 ## 4. Product decision framework
 
@@ -74,40 +79,47 @@ A useful decision scorecard for heterogeneous compute should include:
 
 | Dimension | Product question |
 |---|---|
-| **Workload fit** | Which accelerator best matches the model architecture, latency target, batch profile, and training/inference workload? |
+| **Workload fit** | Which accelerator best matches the workload's training or inference profile, model requirements, latency target, and throughput needs? |
 | **Performance / dollar** | How much useful throughput does each hardware path deliver per unit of cost? |
 | **Performance / watt** | Which option uses constrained power and data-center capacity most efficiently? |
-| **Software portability** | How much work is required to move workloads across MTIA, NVIDIA, and AMD? |
+| **Software portability** | How much work is required to move workloads across hardware paths? |
 | **Developer velocity** | Does the infrastructure reduce or increase hardware-specific friction for model teams? |
-| **Reliability & maturity** | Is the accelerator + software path production-ready at Meta scale? |
+| **Reliability & maturity** | Is the accelerator and software path production-ready at Meta scale? |
 | **Capacity & supply** | Does the portfolio reduce dependence on a single vendor or constrained supply source? |
 | **Total cost of ownership** | What is the end-to-end cost to deploy, operate, and support the workload? |
 
-This framework is more useful than a simple “did total capex fall?” test because total spending can rise even when workload-level economics improve.
+This framework is more useful than a simple "did total capex fall?" test because total spending can rise even when workload-level economics improve.
 
-## 5. Why Meta is unlikely to replace external accelerators outright
+## 5. Evidence for a heterogeneous portfolio
 
 The evidence points to complementarity, not replacement.
 
-Meta announced a long-term AMD AI-infrastructure agreement on February 24, 2026, then announced the accelerated MTIA roadmap on March 11. It subsequently expanded its Broadcom partnership on April 14 to co-develop multiple MTIA generations.
+Meta's 2026 public announcements include:
 
-That sequence is consistent with a portfolio strategy:
+1. **NVIDIA, February 17:** a multi-year infrastructure partnership supporting AI training and inference, with co-design across hardware, networking, and software and an explicit performance-per-watt focus.
+2. **AMD, February 24:** up to 6GW of AMD Instinct GPU capacity, plus roadmap alignment across silicon, systems, and software as part of Meta's portfolio-based infrastructure approach.
+3. **MTIA, March 11:** four new custom-silicon generations in two years, with inference-first optimization and broader workload capability.
+4. **Arm, March 24:** multiple generations of data-center CPUs designed to work alongside MTIA and improve performance density.
+5. **Broadcom, April 14:** multi-generation MTIA co-development, with Meta explicitly describing workload matching, performance, and total cost of ownership as decision criteria.
 
-- external accelerators provide scale, ecosystem depth, and flexibility;
+This is consistent with a portfolio strategy:
+
+- external accelerators provide scale and capacity;
 - custom silicon gives Meta an opportunity to optimize high-volume internal workloads and diversify supply;
+- supporting CPU, networking, packaging, and software decisions shape end-to-end system performance;
 - software portability makes the portfolio more usable;
 - broader infrastructure demand is growing quickly enough that efficiency gains in one workload do not necessarily reduce total company capex.
 
-The key distinction is **unit economics vs. total spending**. MTIA can lower the cost of serving a specific workload even while Meta's total infrastructure budget rises because the number and complexity of AI workloads are also rising.
+The key distinction is **unit economics versus total spending**. MTIA can lower the cost of serving a specific workload even while Meta's total infrastructure budget rises because the number and complexity of AI workloads are also rising.
 
 ## 6. The central unresolved questions
 
 The public record still cannot answer:
 
 1. **How much does MTIA reduce the cost of a comparable workload relative to an external accelerator?**
-2. **How much of Meta's infrastructure spending or deployed compute is actually shifting toward custom silicon?**
+2. **How much of Meta's infrastructure spending or deployed compute is shifting toward custom silicon?**
 3. **How much engineering effort does it take to move a workload across hardware paths?**
-4. **How much value comes from faster placement decisions, supply flexibility, or lower migration friction?**
+4. **How much value comes from faster placement decisions, supply flexibility, lower migration friction, or improved power efficiency?**
 
 Because these variables are not public, estimating a precise MTIA ROI would create false precision.
 
@@ -116,10 +128,10 @@ Because these variables are not public, estimating a precise MTIA ROI would crea
 The strongest future evidence would be:
 
 - a disclosed **cost-per-inference** or similar efficiency trend as newer MTIA generations scale;
-- a clearer **custom-vs-external silicon mix** in infrastructure spending or deployed compute;
+- a clearer **custom versus external silicon mix** in infrastructure spending or deployed compute;
 - evidence that workload growth is being absorbed with slower growth in infrastructure cost per unit of AI activity;
-- production and deployment updates for MTIA 400/450/500;
-- public signals around **portability, developer productivity, or deployment time** across hardware;
+- production and deployment updates for MTIA 400, 450, and 500;
+- public signals around portability, developer productivity, or deployment time across hardware;
 - continued external-silicon agreements alongside MTIA expansion, which would reinforce the portfolio thesis.
 
 A decline in total capex is **not required** for MTIA to be economically successful. If Meta's AI workload volume grows much faster than its infrastructure cost, or if it gains flexibility to route workloads to more efficient hardware, custom silicon can create meaningful value even while absolute capex remains high.
@@ -130,11 +142,11 @@ Based on public evidence, the rational strategy is to continue MTIA while evalua
 
 The most useful internal scorecard would track:
 
-- cost per inference / cost per unit of useful compute;
+- cost per inference or cost per unit of useful compute;
 - utilization and throughput by accelerator type;
 - power efficiency;
-- developer migration effort and time-to-deploy across hardware;
-- reliability / failure rates by accelerator path;
+- developer migration effort and time to deploy across hardware;
+- reliability and failure rates by accelerator path;
 - deployment lead time;
 - external-supplier concentration;
 - total cost of ownership by workload;
@@ -146,11 +158,8 @@ If MTIA and the surrounding software stack improve those measures without sacrif
 
 **Public evidence supports MTIA as an efficiency, flexibility, and diversification strategy. It does not yet prove that MTIA lowers Meta's total infrastructure bill.**
 
-The core product insight is broader: **the value of heterogeneous compute depends on both hardware economics and the software layer that makes the hardware usable.**
+The core product insight is broader: **the value of heterogeneous compute depends on both hardware economics and the software and systems layer that makes the hardware usable.**
 
 ### Primary sources
 
-- Meta Platforms, **Q2 2026 Results**, July 29, 2026.
-- Meta, **Expanding Meta's Custom Silicon to Power Our AI Workloads**, March 11, 2026.
-- Meta, **Meta and AMD Partner for Longterm AI Infrastructure Agreement**, February 24, 2026.
-- Meta, **Meta Partners With Broadcom to Co-Develop Custom AI Silicon**, April 14, 2026.
+See [`SOURCES.md`](SOURCES.md) for the primary-source ledger and the claims supported by each Meta disclosure.

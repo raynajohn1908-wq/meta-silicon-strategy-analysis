@@ -1,0 +1,5 @@
+data/meta_silicon_strategy.db
+data/derived_analysis.json
+__pycache__/
+*.pyc
+.DS_Store

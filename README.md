@@ -72,7 +72,7 @@ Then open `exports/dashboard.html` in a browser. Chart.js is loaded from a CDN; 
 | MTIA 300 | In production; ranking/recommendation training | Meta, March 11, 2026 |
 | MTIA 400/450/500 | Capable of all workloads; primarily targeted at GenAI inference in the near term | Meta, March 11, 2026 |
 | MTIA deployment | Hundreds of thousands of chips used for inference | Meta, March 11, 2026 |
-| Broadcom partnership | Multi-generation MTIA co-development agreement | Meta, April 20, 2026 |
+| Broadcom partnership | Multi-generation MTIA co-development agreement | Meta, April 14, 2026 |
 
 ## What the evidence supports
 
